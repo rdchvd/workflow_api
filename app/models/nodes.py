@@ -1,9 +1,9 @@
 import enum
-from typing import List, Set
+from typing import Set
 from uuid import UUID
 
 from sqlalchemy import ForeignKey, UniqueConstraint
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship, declared_attr
 
 from app.models.base import BaseModel
 
@@ -14,8 +14,13 @@ class Workflow(BaseModel):
     name: Mapped[str] = mapped_column(nullable=False)
     description: Mapped[str] = mapped_column(nullable=True)
 
-    can_view: Mapped[Set["users.User"]] = relationship(back_populates="workflows_to_view")
-    can_edit: Mapped[Set["users.User"]] = relationship(back_populates="workflows_to_edit")
+    @declared_attr
+    def can_view(self) -> Mapped[Set["User"]]:
+        return relationship("User", back_populates="workflows_to_view")
+
+    @declared_attr
+    def can_edit(self) -> Mapped[Set["User"]]:
+        return relationship("User", back_populates="workflows_to_edit")
 
 
 class NodeType(enum.Enum):
@@ -30,8 +35,12 @@ class Node(BaseModel):
 
     node_type: Mapped[NodeType] = mapped_column(nullable=False)
 
-    workflow_id: Mapped[UUID] = mapped_column(ForeignKey("workflow.id"), nullable=False)
-    workflow: Mapped["Workflow"] = relationship(back_populates="nodes")
+    workflow_id: Mapped[UUID] = mapped_column(ForeignKey("workflows.id"), nullable=False)
+
+    @declared_attr
+    def workflow(self) -> Mapped["Workflow"]:
+        return relationship("Workflow", foreign_keys=[self.workflow_id])
+
 
 
 class EdgeWeight(enum.Enum):
@@ -45,24 +54,36 @@ class Edge(BaseModel):
 
     status: Mapped[EdgeWeight] = mapped_column(nullable=False)
 
-    source_node_id: Mapped[UUID] = mapped_column(ForeignKey("node.id"), nullable=False)
-    source_node: Mapped["Node"] = relationship("Node", foreign_keys=[source_node_id])
-
-    target_node_id: Mapped[UUID] = mapped_column(ForeignKey("node.id"), nullable=False)
-    target_node: Mapped["Node"] = relationship("Node", foreign_keys=[target_node_id])
+    source_node_id: Mapped[UUID] = mapped_column(ForeignKey("nodes.id"), nullable=False)
+    target_node_id: Mapped[UUID] = mapped_column(ForeignKey("nodes.id"), nullable=False)
 
     __table_args__ = (UniqueConstraint("source_node_id", "target_node_id"),)
 
+    @declared_attr
+    def source_node(self) -> Mapped["Node"]:
+        return relationship("Node", foreign_keys=[self.source_node_id])
+
+    @declared_attr
+    def target_node(self) -> Mapped["Node"]:
+        return relationship("Node", foreign_keys=[self.target_node_id])
+
 
 class BaseNodeConfiguration(BaseModel):
-    node_id: Mapped[UUID] = mapped_column(ForeignKey("node.id"), nullable=False, single_parent=True)
-    node: Mapped["Node"] = relationship(back_populates="configuration")
+    __abstract__ = True
+
+    node_id: Mapped[UUID] = mapped_column(ForeignKey("nodes.id"), nullable=False)
 
     # __table_args__ = (UniqueConstraint("node_id"),)
 
     class Meta:
         abstract = True
         table_args = (UniqueConstraint("node_id"),)
+
+    @declared_attr
+    def node(self) -> Mapped["Node"]:
+        return relationship("Node", foreign_keys=[self.node_id])
+
+
 
 
 class StartNodeConfiguration(BaseNodeConfiguration):

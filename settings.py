@@ -1,0 +1,26 @@
+import os
+
+from dotenv import load_dotenv
+
+load_dotenv()
+
+DEBUG = os.getenv("DEBUG", "False") == "True"
+
+# db configuration
+POSTGRES_HOST = os.getenv("POSTGRES_HOST")
+POSTGRES_USER = os.getenv("POSTGRES_USER")
+POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD")
+POSTGRES_PORT = int(os.getenv("POSTGRES_PORT"))
+POSTGRES_DB = os.getenv("POSTGRES_DB")
+
+POSTGRES_URL = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}"
+
+MAX_CONNECTIONS_OVERFLOW = int(os.getenv("MAX_CONNECTIONS_OVERFLOW", 30))
+
+# authorization configuration
+SECRET_KEY = os.getenv("SECRET_KEY")
+ACCESS_TOKEN_EXPIRE_MINUTES = os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 60)
+REFRESH_TOKEN_EXPIRE_MINUTES = os.getenv("REFRESH_TOKEN_EXPIRE_MINUTES", 60 * 5)
+HASH_NAME_ALGORITHM = os.getenv("HASH_NAME_ALGORITHM", "HS256")
+JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "Cha2nGeMe-j23455&&")
+JWT_REFRESH_SECRET_KEY = os.getenv("JWT_REFRESH_SECRET_KEY", "changEMe23Too#")

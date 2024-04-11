@@ -7,13 +7,13 @@ load_dotenv()
 DEBUG = os.getenv("DEBUG", "False") == "True"
 
 # db configuration
-POSTGRES_HOST = os.getenv("POSTGRES_HOST")
-POSTGRES_USER = os.getenv("POSTGRES_USER")
-POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD")
-POSTGRES_PORT = int(os.getenv("POSTGRES_PORT"))
-POSTGRES_DB = os.getenv("POSTGRES_DB")
+DB_HOST = os.getenv("DB_HOST")
+DB_USER = os.getenv("DB_USER")
+DB_PASSWORD = os.getenv("DB_PASSWORD")
+DB_PORT = int(os.getenv("DB_PORT"))
+DB_DB = os.getenv("DB_DB")
 
-POSTGRES_URL = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}"
+DB_URL = f"postgresql+asyncpg://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_DB}"
 
 MAX_CONNECTIONS_OVERFLOW = int(os.getenv("MAX_CONNECTIONS_OVERFLOW", 30))
 

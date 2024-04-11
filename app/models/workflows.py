@@ -3,7 +3,7 @@ from typing import Set
 from uuid import UUID
 
 from sqlalchemy import ForeignKey, UniqueConstraint
-from sqlalchemy.orm import Mapped, mapped_column, relationship, declared_attr
+from sqlalchemy.orm import Mapped, declared_attr, mapped_column, relationship
 
 from app.models.base import BaseModel
 
@@ -40,7 +40,6 @@ class Node(BaseModel):
     @declared_attr
     def workflow(self) -> Mapped["Workflow"]:
         return relationship("Workflow", foreign_keys=[self.workflow_id])
-
 
 
 class EdgeWeight(enum.Enum):
@@ -82,8 +81,6 @@ class BaseNodeConfiguration(BaseModel):
     @declared_attr
     def node(self) -> Mapped["Node"]:
         return relationship("Node", foreign_keys=[self.node_id])
-
-
 
 
 class StartNodeConfiguration(BaseNodeConfiguration):

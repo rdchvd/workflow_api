@@ -1,7 +1,6 @@
 from datetime import datetime
 from uuid import UUID
 
-from sqlalchemy import ForeignKey
 from sqlalchemy.ext.asyncio import AsyncAttrs
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
@@ -14,3 +13,4 @@ class BaseModel(AsyncAttrs, DeclarativeBase):
 
     class Meta:
         abstract = True
+        arbitrary_types_allowed = True

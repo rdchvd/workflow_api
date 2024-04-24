@@ -11,20 +11,30 @@ class UserDAL:
         self.db = db
         self.user = user
 
-    def get_base_query(self):
+    @staticmethod
+    def get_base_query():
         return select(User)
 
-    def get_user(self, user_id):
+    async def get_user(self, user_id):
         query = self.get_base_query().filter(User.id == user_id)
-        user = self.db.execute(query).scalar()
+        user = await self.db.execute(query)
+        user = user.scalars().first()
         if not user:
             raise HTTPException(status_code=404, detail="Workflow not found")
         return user
 
-    def get_user_by_email(self, email: str, error: Optional[Dict[str, Any]] = None):
+    async def get_user_by_email(self, email: str, error: Optional[Dict[str, Any]] = None):
         query = self.get_base_query().filter(User.email == email)
-        user = self.db.execute(query).scalar()
+        user = await self.db.execute(query)
+        user = user.scalars().first()
         if not user:
-            error = error or {"status_code": 404, "detail": "User not found"}
-            raise HTTPException(**error)
+            base_error = {"status_code": 404, "detail": "User not found"}
+            base_error.update(error or {})
+            raise HTTPException(**base_error)
+        return user
+
+    async def create_user(self, user_data: Dict[str, Any]) -> User:
+        user = User(**user_data)
+        self.db.add(user)
+        await self.db.commit()
         return user

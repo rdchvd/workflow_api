@@ -37,7 +37,7 @@ class JWTService:
         refresh_expires = int(refresh_expires.timestamp())
 
         access_data = {**data, "jti": uuid4(), "iat": iat, "exp": access_expires, "token_type": "access"}
-        refresh_data = {"jti": uuid4(), "iat": iat, "exp": refresh_expires, "token_type": "refresh"}
+        refresh_data = {**data, "jti": uuid4(), "iat": iat, "exp": refresh_expires, "token_type": "refresh"}
 
         access_token = cls.encode_token(access_data, JWT_SECRET_KEY)
         refresh_token = cls.encode_token(refresh_data, JWT_REFRESH_SECRET_KEY)
@@ -62,9 +62,21 @@ class AuthService:
             email=credentials["email"], error={"status_code": 401, "detail": "Incorrect email or password"}
         )
         if user and UserService.verify_password(plain_password=credentials["password"], hashed_password=user.password):
-            access_token, refresh_token = JWTService.create_tokens(data={"id": user.id})
+            access_token, refresh_token = JWTService.create_tokens(data={"user_id": user.id})
             return dict(access=access_token, refresh=refresh_token)
         raise HTTPException(
             status_code=HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",
         )
+
+    @staticmethod
+    async def refresh_tokens(db: Session, refresh_token: str):
+        """Refreshes access tokens."""
+
+        refresh_data = JWTService.decode_token(refresh_token, JWT_REFRESH_SECRET_KEY)
+        user = await UserDAL(db=db).get_user(user_id=refresh_data["user_id"])
+        if user:
+            access_token, refresh_token = JWTService.create_tokens(data=refresh_data)
+            return dict(access=access_token, refresh=refresh_token)
+
+        raise HTTPException(status_code=HTTP_401_UNAUTHORIZED, detail="Invalid refresh token")

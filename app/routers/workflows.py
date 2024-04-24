@@ -14,7 +14,7 @@ from app.services.workflows import WorkflowService
 from app.utils.auth import get_current_user
 from core.db import get_session
 
-workflows_router = APIRouter(tags=["workflows"])
+workflows_router = APIRouter(tags=["workflows"], prefix="/workflows")
 
 
 class WorkflowViewSet:

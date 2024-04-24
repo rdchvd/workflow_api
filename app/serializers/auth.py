@@ -9,6 +9,11 @@ class TokenSerializer:
 
 
 @dataclass
+class RefreshTokenSerializer:
+    refresh: str
+
+
+@dataclass
 class CredentialsSerializer:
     password: str
     email: EmailStr = Field(default_factory=EmailStr)

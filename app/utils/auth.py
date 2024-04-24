@@ -15,7 +15,7 @@ async def authenticate(db: Session, authorization: str = Depends(OAuth2()), toke
     """Extracts token from authorization header and raises error if invalid."""
     _, token = get_authorization_scheme_param(authorization)
     user_data = JWTService.decode_token(token=token, key=JWT_SECRET_KEY)
-    return await UserDAL(db=db).get_user(user_id=user_data["id"])
+    return await UserDAL(db=db).get_user(user_id=user_data["user_id"])
 
 
 async def get_current_user(db: Session = Depends(get_session), authorization: Optional[str] = Header(default="")):

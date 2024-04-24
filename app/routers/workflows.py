@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
@@ -19,16 +21,18 @@ class WorkflowViewSet:
     @staticmethod
     @workflows_router.get("/{workflow_id}/", response_model=WorkflowSerializer)
     async def retrieve_workflow(
-        workflow_id: str,
+        workflow_id: UUID,
         user: User = Depends(get_current_user),
         db: Session = Depends(get_session),
     ) -> WorkflowSerializer:
-        return await WorkflowService.retrieve(db=db, _id=workflow_id, user=user)
+        workflow = await WorkflowService.retrieve(db=db, _id=workflow_id, user=user)
+        return WorkflowSerializer(**workflow)
 
     @staticmethod
     @workflows_router.get("/", response_model=WorkflowListSerializer)
     async def list_workflows(user: User = Depends(get_current_user), db=Depends(get_session)) -> WorkflowListSerializer:
         workflows = await WorkflowService.list(db=db, user=user)
+        print(f"{workflows=}")
         return WorkflowListSerializer(workflows=workflows)
 
     @staticmethod
@@ -43,17 +47,17 @@ class WorkflowViewSet:
     @staticmethod
     @workflows_router.patch("/{workflow_id}/", response_model=None)
     async def update_workflow(
-        workflow_id: str,
+        workflow_id: UUID,
         workflow_data: WorkflowUpdateSerializer,
         user: User = Depends(get_current_user),
         db=Depends(get_session),
     ):
-        return await WorkflowService.update(db=db, _id=workflow_id, data=workflow_data, user=user)
+        return await WorkflowService.update(db=db, _id=workflow_id, data=workflow_data.__dict__, user=user)
 
     @staticmethod
     @workflows_router.delete("/{workflow_id}/", response_model=None)
     async def delete_workflow(
-        workflow_id: str,
+        workflow_id: UUID,
         user: User = Depends(get_current_user),
         db=Depends(get_session),
     ):

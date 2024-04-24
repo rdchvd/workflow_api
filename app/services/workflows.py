@@ -5,10 +5,6 @@ from sqlalchemy.orm import Session
 
 from app.dals.workflows import WorkflowDAL
 from app.models.users import User
-from app.serializers.workflows import (
-    WorkflowSerializer,
-    WorkflowUpdateSerializer,
-)
 
 
 class WorkflowService:
@@ -16,8 +12,8 @@ class WorkflowService:
 
     @classmethod
     async def retrieve(cls, db: Session, _id: str, user: User = None):
-        data = cls.DAL(db=db, current_user=user).get_workflow(_id)
-        return WorkflowSerializer(**data)
+        workflow = await cls.DAL(db=db, current_user=user).get_workflow(workflow_id=_id)
+        return workflow.__dict__
 
     @classmethod
     async def list(cls, db: Session, user: User):
@@ -31,10 +27,10 @@ class WorkflowService:
         return await cls.DAL(db=db, current_user=user).create_workflow(create_data=data)
 
     @classmethod
-    async def update(cls, db: Session, _id: str, data: WorkflowUpdateSerializer, user: User = None):
-        validated_data = WorkflowUpdateSerializer(**data)
-        return cls.DAL(db=db, current_user=user).update_workflow(workflow_id=_id, update_data=validated_data.dict())
+    async def update(cls, db: Session, _id: str, data: Dict[str, Any], user: User = None):
+        workflow = await cls.DAL(db=db, current_user=user).update_workflow(workflow_id=_id, update_data=data)
+        return workflow.__dict__
 
     @classmethod
     async def delete(cls, db: Session, _id: str, user: User = None):
-        return cls.DAL(db=db, current_user=user).delete_workflow(workflow_id=_id)
+        return await cls.DAL(db=db, current_user=user).delete_workflow(workflow_id=_id)

@@ -40,9 +40,10 @@ class WorkflowDAL:
 
         return select(Workflow).filter(is_creator | can_edit | can_view | can_delete)
 
-    def get_workflow(self, workflow_id: str):
-        query = self.get_base_query().filter(Workflow.id == workflow_id)
-        workflow = self.db.execute(query).scalar()
+    async def get_workflow(self, workflow_id: str):
+        query = await self.get_base_query()
+        workflow = await self.db.execute(query.filter(Workflow.id == workflow_id))
+        workflow = workflow.scalar()
         if not workflow:
             raise HTTPException(status_code=404, detail="Workflow not found")
         return workflow
@@ -59,16 +60,16 @@ class WorkflowDAL:
         self.db.refresh(workflow)
         return workflow
 
-    def update_workflow(self, workflow_id: str, update_data: dict):
-        workflow = self.get_workflow(workflow_id)
+    async def update_workflow(self, workflow_id: str, update_data: dict):
+        workflow = await self.get_workflow(workflow_id)
         for key, value in update_data.items():
             setattr(workflow, key, value)
 
-        self.db.commit()
+        await self.db.commit()
         self.db.refresh(workflow)
         return workflow
 
-    def delete_workflow(self, workflow_id: str):
-        workflow = self.get_workflow(workflow_id)
-        self.db.delete(workflow)
-        self.db.commit()
+    async def delete_workflow(self, workflow_id: str):
+        workflow = await self.get_workflow(workflow_id)
+        await self.db.delete(workflow)
+        await self.db.commit()

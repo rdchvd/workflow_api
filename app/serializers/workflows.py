@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import List, Optional
 
 from pydantic import UUID4, BaseModel
@@ -22,14 +23,18 @@ class WorkflowUpdateSerializer(WorkflowBaseSerializer):
     pass
 
 
-class WorkflowSerializer(WorkflowBaseSerializer):
+@dataclass
+class WorkflowSerializer:
     id: UUID4
-    created_at: str
-    updated_at: str
+    created_at: datetime
+    updated_at: datetime
     created_by: UUID4
+    name: str
+    description: Optional[str] = None
 
     class Config:
-        from_attributes = True
+        orm_mode = True
+        read_with_orm_mode = True
 
 
 class WorkflowListSerializer(BaseModel):

@@ -1,11 +1,11 @@
+from typing import Any, Dict
+
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
 from app.dals.workflows import WorkflowDAL
 from app.models.users import User
 from app.serializers.workflows import (
-    WorkflowCreateSerializer,
-    WorkflowListSerializer,
     WorkflowSerializer,
     WorkflowUpdateSerializer,
 )
@@ -23,13 +23,12 @@ class WorkflowService:
     async def list(cls, db: Session, user: User):
         if not user:
             raise HTTPException(status_code=401, detail="User not found")
-        data = cls.DAL(db=db, current_user=user).list_workflows()
-        return WorkflowListSerializer(workflows=data)
+        workflows = await cls.DAL(db=db, current_user=user).list_workflows()
+        return [workflow.__dict__ for workflow in workflows]
 
     @classmethod
-    async def create(cls, db: Session, data: WorkflowCreateSerializer, user: User = None):
-        validated_data = WorkflowCreateSerializer(**data)
-        return cls.DAL(db=db, current_user=user).create_workflow(create_data=validated_data.dict())
+    async def create(cls, db: Session, data: Dict[str, Any], user: User = None):
+        return await cls.DAL(db=db, current_user=user).create_workflow(create_data=data)
 
     @classmethod
     async def update(cls, db: Session, _id: str, data: WorkflowUpdateSerializer, user: User = None):

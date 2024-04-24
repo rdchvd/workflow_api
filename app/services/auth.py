@@ -23,7 +23,6 @@ class JWTService:
     @staticmethod
     def encode_token(data: Dict[str, Any], secret_key: str) -> str:
         data = json.loads(json.dumps(data, default=str))
-        print(f"{data=}")
         return jwt.encode(data, secret_key, HASH_NAME_ALGORITHM)
 
     @classmethod

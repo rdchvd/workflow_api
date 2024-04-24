@@ -28,7 +28,8 @@ class WorkflowViewSet:
     @staticmethod
     @workflows_router.get("/", response_model=WorkflowListSerializer)
     async def list_workflows(user: User = Depends(get_current_user), db=Depends(get_session)) -> WorkflowListSerializer:
-        return await WorkflowService.list(db=db, user=user)
+        workflows = await WorkflowService.list(db=db, user=user)
+        return WorkflowListSerializer(workflows=workflows)
 
     @staticmethod
     @workflows_router.post("/", response_model=None)
@@ -37,7 +38,7 @@ class WorkflowViewSet:
         user: User = Depends(get_current_user),
         db=Depends(get_session),
     ):
-        return await WorkflowService.create(db=db, data=workflow_data, user=user)
+        return await WorkflowService.create(db=db, data=workflow_data.__dict__, user=user)
 
     @staticmethod
     @workflows_router.patch("/{workflow_id}/", response_model=None)

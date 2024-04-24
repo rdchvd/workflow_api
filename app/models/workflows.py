@@ -1,5 +1,4 @@
 import enum
-from typing import Set
 from uuid import UUID
 
 from sqlalchemy import ForeignKey, UniqueConstraint
@@ -13,14 +12,6 @@ class Workflow(BaseModel):
 
     name: Mapped[str] = mapped_column(nullable=False)
     description: Mapped[str] = mapped_column(nullable=True)
-
-    @declared_attr
-    def can_view(self) -> Mapped[Set["User"]]:
-        return relationship("User", back_populates="workflows_to_view")
-
-    @declared_attr
-    def can_edit(self) -> Mapped[Set["User"]]:
-        return relationship("User", back_populates="workflows_to_edit")
 
 
 class NodeType(enum.Enum):

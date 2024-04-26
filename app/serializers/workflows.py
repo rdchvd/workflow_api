@@ -1,8 +1,10 @@
 from datetime import datetime
 from typing import List, Optional
 
-from pydantic import UUID4, BaseModel
+from pydantic import UUID4, BaseModel, Field
 from pydantic.dataclasses import dataclass
+
+from app.models import NodeStatus
 
 
 @dataclass
@@ -41,26 +43,38 @@ class WorkflowListSerializer(BaseModel):
     workflows: List[WorkflowSerializer]
 
 
-class MessageNodeConfigurationBaseSerializer(BaseModel):
-    text: str
-
-
-class MessageNodeConfigurationCreateSerializer(MessageNodeConfigurationBaseSerializer):
-    pass
-
-
-class MessageNodeConfigurationUpdateSerializer(MessageNodeConfigurationBaseSerializer):
-    pass
-
-
-class MessageNodeConfigurationSerializer(MessageNodeConfigurationBaseSerializer):
+class NodeBaseSerializer(BaseModel):
     id: UUID4
-    node_id: UUID4
-    status: str
+    node_type: str
+    workflow_id: UUID4
+    status: Optional[NodeStatus] = Field(None)
+    text: Optional[str] = Field(None)
 
-    class Config:
-        from_attributes = True
+    def get_status(self):
+        print()
+        return self.status
 
 
-class MessageNodeConfigurationListSerializer(BaseModel):
-    message_node_configurations: List[MessageNodeConfigurationSerializer]
+class NodeBaseCreateSerializer(BaseModel):
+    pass
+
+
+class StartNodeCreateSerializer(NodeBaseCreateSerializer):
+    pass
+
+
+class MessageNodeCreateSerializer(NodeBaseCreateSerializer):
+    text: str
+    status: Optional[NodeStatus]
+
+
+class ConditionNodeCreateSerializer(NodeBaseCreateSerializer):
+    pass
+
+
+class EndNodeCreateSerializer(NodeBaseCreateSerializer):
+    pass
+
+
+class NodeListSerializer(BaseModel):
+    nodes: List[NodeBaseSerializer]

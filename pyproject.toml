@@ -27,6 +27,7 @@ pytest_async = "^0.1.1"
 pytest-postgresql = "^6.0.0"
 pytest-asyncio = "^0.23.6"
 Faker = "^25.0.1"
+pytest-coverage = "^0.0"
 
 [tool.poetry.dev-dependencies]
 ruff = "^0.3.5"

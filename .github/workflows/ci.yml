@@ -27,7 +27,7 @@ jobs:
 
       - name: Run tests and generate coverage report
         run: |
-          poetry run coverage run --source=your_module -m pytest
+          poetry run coverage run -m pytest
           poetry run coverage report -m > coverage.txt
 
       - name: Upload coverage report

@@ -49,7 +49,7 @@ class WorkflowViewSet:
         return WorkflowListSerializer(workflows=workflows)
 
     @staticmethod
-    @workflows_router.post("/", response_model=WorkflowSerializer)
+    @workflows_router.post("/", response_model=WorkflowSerializer, status_code=201)
     async def create_workflow(
         workflow_data: WorkflowCreateSerializer,
         user: User = Depends(get_current_user),

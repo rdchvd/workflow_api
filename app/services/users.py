@@ -20,7 +20,7 @@ class UserService:
 
     @classmethod
     async def create_user(cls, db: Session, data: Dict[str, Any]):
-        existing_user = await UserDAL(db).get_user_by_email(data["email"])
+        existing_user = await UserDAL(db).get_user_by_email(data["email"], raise_exception=False)
         if existing_user:
             raise HTTPException(detail="User with this email already exists", status_code=400)
         data["password"] = cls.hash_password(data["password"])

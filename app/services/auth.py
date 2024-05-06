@@ -49,9 +49,9 @@ class JWTService:
         try:
             return jwt.decode(token, algorithms=HASH_NAME_ALGORITHM, key=key)
         except ExpiredSignatureError:
-            raise HTTPException(status_code=400, detail="Token has expired.")
+            raise HTTPException(status_code=401, detail="Token has expired.")
         except JWTError:
-            raise HTTPException(status_code=400, detail="Incorrect token type.")
+            raise HTTPException(status_code=401, detail="Incorrect token type.")
 
 
 class AuthService:

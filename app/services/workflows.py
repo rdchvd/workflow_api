@@ -27,7 +27,8 @@ class WorkflowService:
 
     @classmethod
     async def create(cls, db: Session, data: Dict[str, Any], user: User = None):
-        return await cls.DAL(db=db, current_user=user).create_workflow(create_data=data)
+        workflow = await cls.DAL(db=db, current_user=user).create_workflow(create_data=data)
+        return workflow.__dict__
 
     @classmethod
     async def update(cls, db: Session, _id: Union[str, UUID], data: Dict[str, Any], user: User = None):

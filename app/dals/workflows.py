@@ -74,6 +74,8 @@ class WorkflowDAL:
     async def update_workflow(self, workflow_id: str, update_data: dict):
         workflow = await self.get_workflow(workflow_id, on_update=True)
         for key, value in update_data.items():
+            if value is None:
+                continue
             setattr(workflow, key, value)
 
         await self.db.commit()

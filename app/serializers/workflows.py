@@ -10,7 +10,7 @@ from app.models import NodeStatus
 @dataclass
 class WorkflowBaseSerializer:
     name: str
-    description: Optional[str] = None
+    description: Optional[str] = Field(None)
 
     class Config:
         orm_mode = True

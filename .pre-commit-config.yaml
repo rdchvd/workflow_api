@@ -1,9 +1,7 @@
-exclude: ^tests/
-
 default_language_version:
     python: python3.11
 
-default_stages: [commit]
+default_stages: [commit, push]
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -19,3 +17,13 @@ repos:
         - id: ruff
           args: [ --fix ]
         - id: ruff-format
+  - repo: local
+    hooks:
+    -   id: pytest-check
+        stages: [push]
+        types: [python]
+        name: pytest-check
+        entry: python -m pytest -v tests/
+        language: system
+        pass_filenames: false
+        always_run: true

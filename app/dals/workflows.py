@@ -68,7 +68,7 @@ class WorkflowDAL:
         workflow = Workflow(**create_data, created_by=self.user.id)
         self.db.add(workflow)
         await self.db.commit()
-        self.db.refresh(workflow)
+        await self.db.refresh(workflow)
         return workflow
 
     async def update_workflow(self, workflow_id: str, update_data: dict):
@@ -79,7 +79,7 @@ class WorkflowDAL:
             setattr(workflow, key, value)
 
         await self.db.commit()
-        self.db.refresh(workflow)
+        await self.db.refresh(workflow)
         return workflow
 
     async def delete_workflow(self, workflow_id: str):
@@ -122,7 +122,7 @@ class NodeDAL:
         config = self._create_node_configuration(node.id, configuration_data)
 
         await self.db.commit()
-        self.db.refresh(node)
+        await self.db.refresh(node)
 
         return node, config
 
@@ -147,7 +147,7 @@ class NodeDAL:
             setattr(config, key, value)
 
         await self.db.commit()
-        self.db.refresh(config)
+        await self.db.refresh(config)
         return config
 
     async def delete_node(self, node_id: Union[UUID, str], workflow_id: Union[UUID, str]):

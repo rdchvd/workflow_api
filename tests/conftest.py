@@ -1,9 +1,10 @@
 from typing import Generator
 
 import pytest
+from fastapi.testclient import TestClient
+
 from alembic import command
 from alembic.config import Config
-from fastapi.testclient import TestClient
 from core.main import app
 
 test_user_data = {"email": "test@test.com", "password": "test"}
@@ -52,5 +53,3 @@ async def token(client, create_user):
         return response.json()["access"]
     else:
         print(f"Failed to get token. Error: {response.json()}")
-
-

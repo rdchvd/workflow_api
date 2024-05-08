@@ -1,25 +1,14 @@
 import uuid
 
 import pytest
-from faker import Faker
 
 from tests.utils import compare_results
-
-faker = Faker()
-
-
-def get_workflow_data():
-    return {
-        "name": faker.name(),
-        "description": faker.sentence(),
-    }
+from tests.workflows.utils import create_base_workflow, faker, get_workflow_data
 
 
 @pytest.fixture(scope="function")
 def base_workflow(client, token):
-    test_data = get_workflow_data()
-    response = client.post("/workflows/", json=test_data, headers={"Authorization": f"Bearer {token}"})
-    data = response.json()
+    data = create_base_workflow(client, token)
     yield data
     client.delete(f"/workflows/{data['id']}", headers={"Authorization": f"Bearer {token}"})
 

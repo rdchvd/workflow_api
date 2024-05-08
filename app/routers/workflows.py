@@ -68,7 +68,7 @@ class WorkflowViewSet:
         return await WorkflowService.update(db=db, _id=workflow_id, data=workflow_data.__dict__, user=user)
 
     @staticmethod
-    @workflows_router.delete("/{workflow_id}/", response_model=None)
+    @workflows_router.delete("/{workflow_id}/", response_model=None, status_code=204)
     async def delete_workflow(
         workflow_id: UUID,
         user: User = Depends(get_current_user),

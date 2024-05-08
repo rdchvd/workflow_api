@@ -1,32 +1,14 @@
-from faker import Faker
-
 from tests.utils import compare_results
-
-faker = Faker()
-
-
-def get_workflow_data():
-    return {
-        "name": faker.name(),
-        "description": faker.sentence(),
-    }
+from tests.workflows.utils import faker, get_workflow_data
 
 
 def test_create_workflow_invalid_token(client):
-    response = client.post(
-        "/workflows/",
-        json=get_workflow_data(),
-        headers={"Authorization": f"Bearer token"}
-    )
+    response = client.post("/workflows/", json=get_workflow_data(), headers={"Authorization": "Bearer token"})
     assert response.status_code == 401
 
 
 def test_create_workflow_invalid_token_scheme(client, token):
-    response = client.post(
-        "/workflows/",
-        json=get_workflow_data(),
-        headers={"Authorization": f"Basic token"}
-    )
+    response = client.post("/workflows/", json=get_workflow_data(), headers={"Authorization": "Basic token"})
     assert response.status_code == 403
 
 
@@ -40,11 +22,7 @@ def test_create_workflow_wo_auth(client, token):
 
 def test_create_workflow_full(client, token):
     test_data = get_workflow_data()
-    response = client.post(
-        "/workflows/",
-        json=test_data,
-        headers={"Authorization": f"Bearer {token}"}
-    )
+    response = client.post("/workflows/", json=test_data, headers={"Authorization": f"Bearer {token}"})
     data = response.json()
 
     assert response.status_code == 201
@@ -56,11 +34,7 @@ def test_create_workflow_wo_optional(client, token):
     test_data = get_workflow_data()
     test_data.pop("description")
 
-    response = client.post(
-        "/workflows/",
-        json=test_data,
-        headers={"Authorization": f"Bearer {token}"}
-    )
+    response = client.post("/workflows/", json=test_data, headers={"Authorization": f"Bearer {token}"})
     assert response.status_code == 201
 
     data = response.json()
@@ -69,16 +43,9 @@ def test_create_workflow_wo_optional(client, token):
 
 
 def test_create_workflow_w_incorrect_types(client, token):
-    test_data = {
-        "name": faker.random_number(),
-        "description": faker.boolean()
-    }
+    test_data = {"name": faker.random_number(), "description": faker.boolean()}
 
-    response = client.post(
-        "/workflows/",
-        json=test_data,
-        headers={"Authorization": f"Bearer {token}"}
-    )
+    response = client.post("/workflows/", json=test_data, headers={"Authorization": f"Bearer {token}"})
     assert response.status_code == 422
 
     data = response.json()
